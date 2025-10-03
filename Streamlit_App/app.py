@@ -34,6 +34,9 @@ import matplotlib.pyplot as plt
 import json, os
 from skops.io import load as skload, get_untrusted_types
 import base64
+import requests
+from requests.exceptions import RequestException, Timeout
+
 
 # ------------------------------
 # Config & page
@@ -43,6 +46,10 @@ APP_TITLE = os.getenv("APP_TITLE", "ExoWiz")
 MODEL_PATH = os.getenv("MODEL_PATH", "artifacts/koi_planet_classifier.joblib")
 ARTIFACTS_DIR = os.getenv("ARTIFACTS_DIR", os.path.dirname(MODEL_PATH) or "artifacts")
 MAX_PREVIEW_ROWS = int(os.getenv("MAX_PREVIEW_ROWS", "20"))
+API_BASE_URL = os.getenv("API_BASE_URL", "https://your-ml.example.com")
+API_KEY = os.getenv("API_KEY", "")  # or use Streamlit Secrets
+API_TIMEOUT = int(os.getenv("API_TIMEOUT", "60"))  # seconds
+
 
 def get_base64_of_bin_file(bin_file):
     """Read a binary file and return base64-encoded string."""
@@ -79,6 +86,91 @@ st.caption("Upload a CSV with the same feature columns used at training. The app
 # ------------------------------
 # Utilities
 # ------------------------------
+
+def _auth_headers() -> dict:
+    """Attach API key if provided."""
+    h = {"Accept": "*/*"}
+    if API_KEY:
+        h["Authorization"] = f"Bearer {API_KEY}"
+    return h
+
+def send_csv_sync(csv_bytes: bytes, filename: str = "input.csv") -> Tuple[bytes, str]:
+    """
+    Send CSV to a synchronous /predict endpoint that returns results immediately.
+    Expected responses:
+      - application/json (predictions as JSON)
+      - text/csv (predictions CSV)
+    Returns: (raw_bytes, content_type)
+    """
+    url = f"{API_BASE_URL.rstrip('/')}/predict"
+    files = {"file": (filename, csv_bytes, "text/csv")}
+    try:
+        r = requests.post(url, headers=_auth_headers(), files=files, timeout=API_TIMEOUT)
+        r.raise_for_status()
+        ctype = r.headers.get("Content-Type", "").split(";")[0].strip().lower()
+        return r.content, ctype
+    except (RequestException, Timeout) as e:
+        st.error(f"Error calling ML service (sync): {e}")
+        st.stop()
+
+def send_csv_async(csv_bytes: bytes, filename: str = "input.csv", poll_every=2, max_wait=300) -> Tuple[bytes, str]:
+    """
+    For an async flow:
+      1) POST /jobs to start → returns {job_id}
+      2) GET /jobs/{job_id} until status == 'done' → provides result_url
+      3) GET result_url to download results (CSV or JSON)
+    Edit paths/fields to match your API.
+    """
+    # 1) start job
+    start_url = f"{API_BASE_URL.rstrip('/')}/jobs"
+    files = {"file": (filename, csv_bytes, "text/csv")}
+    try:
+        r = requests.post(start_url, headers=_auth_headers(), files=files, timeout=API_TIMEOUT)
+        r.raise_for_status()
+        job = r.json()
+        job_id = job.get("job_id")
+        if not job_id:
+            raise ValueError("No job_id returned from /jobs")
+    except Exception as e:
+        st.error(f"Error starting async job: {e}")
+        st.stop()
+
+    # 2) poll status
+    import time
+    status_url = f"{API_BASE_URL.rstrip('/')}/jobs/{job_id}"
+    deadline = time.time() + max_wait
+    with st.spinner("Submitting to ML and waiting for results…"):
+        while time.time() < deadline:
+            try:
+                s = requests.get(status_url, headers=_auth_headers(), timeout=API_TIMEOUT)
+                s.raise_for_status()
+                info = s.json()
+                status = info.get("status")
+                if status == "done":
+                    result_url = info.get("result_url")
+                    if not result_url:
+                        raise ValueError("status=done but no result_url")
+                    break
+                elif status in ("failed", "error"):
+                    raise RuntimeError(info.get("error", "Job failed"))
+            except Exception as e:
+                st.error(f"Error polling job: {e}")
+                st.stop()
+            time.sleep(poll_every)
+        else:
+            st.error("Timed out waiting for async job result.")
+            st.stop()
+
+    # 3) fetch result
+    try:
+        res = requests.get(result_url, headers=_auth_headers(), timeout=API_TIMEOUT)
+        res.raise_for_status()
+        ctype = res.headers.get("Content-Type", "").split(";")[0].strip().lower()
+        return res.content, ctype
+    except Exception as e:
+        st.error(f"Error downloading job result: {e}")
+        st.stop()
+
 
 def _sha1(b: bytes) -> str:
     return hashlib.sha1(b).hexdigest()
@@ -194,52 +286,86 @@ with st.sidebar:
 tab_pred, tab_global, tab_local = st.tabs(["🔮 Predictions", "📊 Global Explanations", "🔍 Local Explanations"]) 
 
 # ------------------------------
-# Predictions tab
+# Predictions tab (REMOTE ML)
 # ------------------------------
 with tab_pred:
-    st.subheader("Run predictions on uploaded CSV")
+    st.subheader("Run predictions on uploaded CSV (sent to your ML service)")
     uploaded = st.file_uploader("Upload candidates CSV", type=["csv"], accept_multiple_files=False)
 
     if uploaded is None:
-        st.info("Upload a CSV to begin. Columns are matched case-insensitively to the model's feature list.")
+        st.info("Upload a CSV to begin. The file will be sent to your ML API, and results (JSON or CSV) will be displayed here.")
     else:
-        # Preview
+        # Preview a few rows for sanity-check
         try:
             preview_df = pd.read_csv(uploaded, nrows=min(MAX_PREVIEW_ROWS, 200))
             st.dataframe(preview_df, use_container_width=True)
         except Exception as e:
-            st.error(f"Failed to read CSV: {e}")
+            st.error(f"Failed to read CSV preview: {e}")
             st.stop()
 
-        with st.spinner("Scoring…"):
+        # --- Send to your ML service (choose sync OR async) ---
+        with st.spinner("Sending CSV to your ML service…"):
             content = uploaded.getvalue()
-            scored_df, missing = score_csv(content, threshold=thresh)
 
-        if missing:
-            st.error("Missing required feature columns: " + ", ".join(missing))
-        else:
-            st.success(f"Scored {len(scored_df)} rows.")
+            # If your API replies immediately with results:
+            raw, ctype = send_csv_sync(content, filename=uploaded.name)
 
-            # Results table
-            st.dataframe(scored_df, use_container_width=True)
+            # If your API is job-based (submit + poll), use this instead:
+            # raw, ctype = send_csv_async(content, filename=uploaded.name)
 
-            # Probability histogram
+        # --- Handle results ---
+        if "json" in (ctype or "").lower():
+            # Treat as JSON
             try:
-                fig = plt.figure()
-                plt.hist(scored_df["planet_probability"].values, bins=30)
-                plt.xlabel("planet_probability"); plt.ylabel("count"); plt.title("Probability distribution")
-                st.pyplot(fig, use_container_width=True)
-            except Exception:
-                pass
+                data = json.loads(raw.decode("utf-8", errors="ignore"))
+                st.success("Received predictions (JSON).")
+                st.json(data)
 
-            # Download
-            csv_buf = io.StringIO(); scored_df.to_csv(csv_buf, index=False)
-            st.download_button(
-                label="Download predictions CSV",
-                data=csv_buf.getvalue(),
-                file_name="predictions.csv",
-                mime="text/csv",
-            )
+                # If the JSON is tabular or list-like, also show as a DataFrame and allow CSV download
+                try:
+                    df = pd.json_normalize(data)
+                    if not df.empty:
+                        st.dataframe(df, use_container_width=True)
+                        csv_buf = io.StringIO(); df.to_csv(csv_buf, index=False)
+                        st.download_button(
+                            "Download predictions CSV",
+                            csv_buf.getvalue(),
+                            "predictions.csv",
+                            "text/csv"
+                        )
+                except Exception:
+                    pass
+            except Exception as e:
+                st.error(f"Could not parse JSON response: {e}")
+
+        elif ("text/csv" in (ctype or "").lower()) or raw.strip().startswith(b"id,") or raw.strip().startswith(b"prediction"):
+            # Treat as CSV
+            try:
+                df = pd.read_csv(io.BytesIO(raw))
+                st.success(f"Received predictions CSV with {len(df)} rows.")
+                st.dataframe(df, use_container_width=True)
+
+                # Probability histogram if a suitable column exists
+                prob_col = next((c for c in df.columns if c.lower() in ("probability", "planet_probability", "score", "proba", "pred_proba")), None)
+                if prob_col is not None:
+                    fig = plt.figure()
+                    plt.hist(df[prob_col].values, bins=30)
+                    plt.xlabel(prob_col); plt.ylabel("count"); plt.title("Probability distribution")
+                    st.pyplot(fig, use_container_width=True)
+
+                st.download_button(
+                    "Download predictions CSV",
+                    raw,
+                    "predictions.csv",
+                    "text/csv"
+                )
+            except Exception as e:
+                st.error(f"Could not read returned CSV: {e}")
+
+        else:
+            st.warning(f"Received unsupported content-type: {ctype or 'unknown'} (showing a preview of the raw bytes)")
+            st.code(raw[:1000], language="text")
+
 
 # ------------------------------
 # Global explanations tab
