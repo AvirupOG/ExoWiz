@@ -1,8 +1,8 @@
-# ExoWiz
-## Team Akasher Avengers presents ExoWiz - Embark on a Journey to Detect Exoplanets
+## ExoWiz
+### Team Akasher Avengers presents ExoWiz - Embark on a Journey to Detect Exoplanets
 
-# Introduction
-## Welcome to ExoWiz, a Artificial Intelligence based website where astronomers can upload datasets and detect exoplanets.
+## Introduction
+### Welcome to ExoWiz, a Artificial Intelligence based website where astronomers can upload datasets and detect exoplanets.
 
 # Team Akasher Avengers
 **Team Leader:** Avirup Duttta<br>
@@ -12,12 +12,12 @@
 **Full Stack Developer:** Syed Alavi Ahmed
 
 
-# Tools
+## Tools
    1. Google Collab
    2. Visual Studio Code
    3. Github
 
-# Technologies
+## Technologies
    1. CNN,GBM
    2. Streamlit
    ## Screen-shots
