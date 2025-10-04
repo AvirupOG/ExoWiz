@@ -2,7 +2,7 @@
 ### Team Akasher Avengers presents ExoWiz - Embark on a Journey to Detect Exoplanets
 
 ## Introduction
-### Welcome to ExoWiz, a Artificial Intelligence based website where astronomers can upload datasets and detect exoplanets.
+#### Welcome to ExoWiz, a Artificial Intelligence based website where astronomers can upload datasets and detect exoplanets.
 
 ## Team Akasher Avengers
 ### **Team Leader:** _Avirup Duttta_<br>
