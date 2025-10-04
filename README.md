@@ -6,10 +6,10 @@
 
 # Team Akasher Avengers
  **Team Leader:**    Avirup Duttta
- ### **Frontend Developer:**   Maliha Nur Vushra<br>
- ### **AI/ML Developer:**   Abdul Muiz Muhammed Sabahath<br>
- ### **Content Creator:**   Nafisa Tasnim Chowdhury<br>
- ### **Full Stack Developer:**   Syed Alavi Ahmed
+ **Frontend Developer:**   Maliha Nur Vushra<br>
+ **AI/ML Developer:**   Abdul Muiz Muhammed Sabahath<br>
+ **Content Creator:**   Nafisa Tasnim Chowdhury<br>
+ **Full Stack Developer:**   Syed Alavi Ahmed
 
 
 # Tools
