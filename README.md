@@ -44,8 +44,8 @@
 
 
 
-## Getting Started
-### Introduction
+# Getting Started
+## Introduction
 Humanity’s quest to understand the universe has entered a new era. Thanks to data from multiple space-based missions, thousands of planets beyond our solar system have already been discovered. Yet, most of these exoplanets were identified manually, requiring countless hours of expert analysis. With advances in Artificial Intelligence (AI) and Machine Learning (ML), we now have the tools to accelerate this search — uncovering new worlds at a pace once thought impossible.
 
 ## Choose Your Dataset
@@ -55,13 +55,13 @@ Just like exploring uncharted star systems, each dataset offers its own challeng
 ### Level 1: Data Horizons – The First Look
 Begin by exploring raw exoplanet datasets. Understand the structure of light curves, noise factors, and confirmed planetary signatures. This foundation prepares you for deeper AI exploration.
 
-## Level 2: Model Building – Training the Explorer
+### Level 2: Model Building – Training the Explorer
 Develop your AI/ML model. Experiment with algorithms — from classical classifiers to deep learning approaches — to distinguish between planetary signals and false positives.
 
-## Level 3: Validation & Testing – The Reality Check
+### Level 3: Validation & Testing – The Reality Check
 Put your model to the test. Apply it to unseen datasets and measure its ability to correctly identify candidate exoplanets. Learn about accuracy, precision, recall, and the importance of reducing false detections.
 
-## Level 4: Beyond Discovery – Scaling to the Cosmos
+### Level 4: Beyond Discovery – Scaling to the Cosmos
 Tackle the larger implications. How can automated AI-driven discovery reshape our understanding of the galaxy? Explore the potential for detecting Earth-like worlds and predicting habitability.
 
 ## Educational Goals
