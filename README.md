@@ -5,7 +5,7 @@
 ## Welcome to ExoWiz, a Artificial Intelligence based website where astronomers can upload datasets and detect exoplanets.
 
 # Team Akasher Avengers
-Team Leader: Avirup Duttta
+Team Leader: Avirup Duttta<br>
 Frontend Developer: Maliha Nur Vushra
 AI/ML Developer: Abdul Muiz Muhammed Sabahath
 Content Creator: Nafisa Tasnim Chowdhury
