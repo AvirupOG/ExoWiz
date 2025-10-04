@@ -20,7 +20,7 @@
 # Technologies
    ### 1. CNN,GBM
    ### 2. Streamlit
-   ## Screen-shots
+   # Screen-shots
 
 
 ![s1](https://github.com/AvirupOG/ExoWiz/blob/main/images/Screenshot%202025-10-03%20161925.png)
