@@ -66,9 +66,9 @@ Tackle the larger implications. How can automated AI-driven discovery reshape ou
 
 ## Educational Goals
  **Deepen Understanding:** Learn how exoplanets are discovered and why AI is transforming astronomy.
-#### Hands-On Exploration: Gain practical skills in AI/ML applied to real-world astrophysical data.
-#### Critical Thinking: Tackle data challenges, noise filtering, and modeling trade-offs.
-#### Inspire Discovery: Contribute to the future of space exploration and potentially uncover new planets.
+ **Hands-On Exploration:** Gain practical skills in AI/ML applied to real-world astrophysical data.
+ **Critical Thinking:** Tackle data challenges, noise filtering, and modeling trade-offs.
+ **Inspire Discovery:** Contribute to the future of space exploration and potentially uncover new planets.
 
 Aqua Explorer aims to make learning about the water cycle and climate change engaging and accessible for students, ultimately contributing to a more informed and environmentally conscious generation.
 
