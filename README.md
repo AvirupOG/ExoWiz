@@ -65,7 +65,7 @@ Put your model to the test. Apply it to unseen datasets and measure its ability 
 Tackle the larger implications. How can automated AI-driven discovery reshape our understanding of the galaxy? Explore the potential for detecting Earth-like worlds and predicting habitability.
 
 ## Educational Goals
- Deepen Understanding: Learn how exoplanets are discovered and why AI is transforming astronomy.
+ **Deepen Understanding:** Learn how exoplanets are discovered and why AI is transforming astronomy.
 #### Hands-On Exploration: Gain practical skills in AI/ML applied to real-world astrophysical data.
 #### Critical Thinking: Tackle data challenges, noise filtering, and modeling trade-offs.
 #### Inspire Discovery: Contribute to the future of space exploration and potentially uncover new planets.
