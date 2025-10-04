@@ -52,7 +52,7 @@ Humanity’s quest to understand the universe has entered a new era. Thanks to d
 Just like exploring uncharted star systems, each dataset offers its own challenges and opportunities. NASA’s Kepler, TESS, and other survey missions provide vast amounts of stellar light curve data, where exoplanet signals hide among noise. Which dataset will you harness to train your model?
 
 ## Challenge Levels
-### Level 1: _Data Horizons – The First Look_
+### Level 1: Data Horizons – The First Look
 Begin by exploring raw exoplanet datasets. Understand the structure of light curves, noise factors, and confirmed planetary signatures. This foundation prepares you for deeper AI exploration.
 
 ### Level 2: Model Building – Training the Explorer
@@ -65,7 +65,7 @@ Put your model to the test. Apply it to unseen datasets and measure its ability 
 Tackle the larger implications. How can automated AI-driven discovery reshape our understanding of the galaxy? Explore the potential for detecting Earth-like worlds and predicting habitability.
 
 ## Educational Goals
-#### Deepen Understanding: Learn how exoplanets are discovered and why AI is transforming astronomy.
+ Deepen Understanding: Learn how exoplanets are discovered and why AI is transforming astronomy.
 #### Hands-On Exploration: Gain practical skills in AI/ML applied to real-world astrophysical data.
 #### Critical Thinking: Tackle data challenges, noise filtering, and modeling trade-offs.
 #### Inspire Discovery: Contribute to the future of space exploration and potentially uncover new planets.
