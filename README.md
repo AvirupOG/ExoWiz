@@ -13,13 +13,13 @@
 
 
 ## Tools
-   ###1. Google Collab
-   ###2. Visual Studio Code
-   ###3. Github
+   ### 1. Google Collab
+   ### 2. Visual Studio Code
+   ### 3. Github
 
 ## Technologies
-   ###1. CNN,GBM
-   ###2. Streamlit
+   ### 1. CNN,GBM
+   ### 2. Streamlit
    ## Screen-shots
 
 
